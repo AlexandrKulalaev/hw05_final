@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='post',
             name='group',
-            field=models.ForeignKey(blank=True, null=True, on_delete=None, related_name='group', to='posts.Group'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=None,
+                related_name='group',
+                to='posts.Group'),
         ),
     ]

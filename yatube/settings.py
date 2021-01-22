@@ -5,7 +5,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'usrfqm(b1b769!gf3x$nk&!$xr!8qlf(4qzt2#@7bz=h)(4u-g'
 
 DEBUG = True
-#DEBUG = False
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -18,7 +17,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'about',
     'users',
-    'posts',  
+    'posts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -106,16 +105,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 LOGIN_URL = '/auth/login/'
-LOGIN_REDIRECT_URL = 'index' 
-# LOGOUT_REDIRECT_URL = "index" 
+LOGIN_REDIRECT_URL = 'index'
+# LOGOUT_REDIRECT_URL = "index"
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails') 
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
-} 
+}

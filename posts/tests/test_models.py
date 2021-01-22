@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from posts.models import Post, Group, User
 
@@ -9,22 +8,21 @@ class PostModelTest(TestCase):
         super().setUpClass()
 
         cls.user = User.objects.create(username='UserTest')
-        
+
         cls.group = Group.objects.create(
-            title = 'задайте заголовок',
-            slug = 'test_slug',
-            description = 'Описание группы'
+            title='задайте заголовок',
+            slug='test_slug',
+            description='Описание группы'
         )
 
         cls.post = Post.objects.create(
-            text = 'Тестовый текст',
-            author = cls.user,
-            group = cls.group,
+            text='Тестовый текст',
+            author=cls.user,
+            group=cls.group,
         )
 
     def setUp(self):
         self.guest_client = Client()
-
 
     def test_verbose_name(self):
         """verbose_name post в полях совпадает с ожидаемым."""
@@ -61,4 +59,3 @@ class PostModelTest(TestCase):
         group = PostModelTest.group
         expected_object_name = group.title
         self.assertEquals(expected_object_name, str(group))
-            

@@ -17,17 +17,29 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='group',
             name='description',
-            field=models.TextField(help_text='Описание группы. Не более 400 символов', max_length=400, verbose_name='Описание'),
+            field=models.TextField(
+                help_text='Описание группы. Не более 400 символов',
+                max_length=400,
+                verbose_name='Описание'),
         ),
         migrations.AlterField(
             model_name='group',
             name='title',
-            field=models.CharField(help_text='Задайте заголовок', max_length=200, verbose_name='Заголовок'),
+            field=models.CharField(
+                help_text='Задайте заголовок',
+                max_length=200,
+                verbose_name='Заголовок'),
         ),
         migrations.AlterField(
             model_name='post',
             name='group',
-            field=models.ForeignKey(blank=True, null=True, on_delete=None, related_name='group', to='posts.Group', verbose_name='Группа'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=None,
+                related_name='group',
+                to='posts.Group',
+                verbose_name='Группа'),
         ),
         migrations.AlterField(
             model_name='post',
