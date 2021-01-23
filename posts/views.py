@@ -62,6 +62,7 @@ def profile(request, username):
     author = User.objects.get(username=username)
     post_list = Post.objects.filter(author=author).select_related(
         'author').order_by('-pub_date')
+    count = Post.objects.filter(author=author).select_related('author').count()
     paginator = Paginator(post_list, 5)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -76,6 +77,7 @@ def profile(request, username):
     context = {
         'page': page,
         'author': author,
+        'count': count,
         'paginator': paginator,
         'following': following,
         'followers': followers,

@@ -9,10 +9,7 @@ from django.urls import reverse
 
 from posts.forms import PostForm
 from posts.models import Post, Group, User
-
-
-SLUG = 'test_slug'
-INDEX_URL = reverse('index')
+from . import constants as c
 
 
 class PostCreateFormTests(TestCase):
@@ -21,17 +18,9 @@ class PostCreateFormTests(TestCase):
         super().setUpClass()
         settings.MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
-        cls.small_gif = (b'\x47\x49\x46\x38\x39\x61\x02\x00'
-                         b'\x01\x00\x80\x00\x00\x00\x00\x00'
-                         b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-                         b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-                         b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-                         b'\x0A\x00\x3B'
-                         )
-
         cls.uploaded = SimpleUploadedFile(
             name='small.gif',
-            content=cls.small_gif,
+            content=c.SMALL_GIF,
             content_type='image/gif'
         )
 
@@ -39,7 +28,7 @@ class PostCreateFormTests(TestCase):
 
         cls.group = Group.objects.create(
             title='Тестовая группа',
-            slug=SLUG,
+            slug=c.SLUG,
             description='Описание группы'
         )
 
@@ -79,9 +68,9 @@ class PostCreateFormTests(TestCase):
             follow=True
         )
 
-        self.assertRedirects(response, INDEX_URL)
+        self.assertRedirects(response, c.INDEX_URL)
         self.assertEqual(Post.objects.count(), post_count + 1)
-        self.assertTrue(Group.objects.filter(slug=SLUG).exists())
+        self.assertTrue(Group.objects.filter(slug=c.SLUG).exists())
 
 
 class PostFormTests(TestCase):

@@ -2,18 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from posts.models import Post, Group, User
-
-
-USERNAME = 'other'
-SLUG = 'test_slug'
-ABOUT_AUTHOR_URL = '/about/author/'
-ABOUT_TECH_URL = '/about/tech/'
-INDEX_URL = reverse('index')
-NEW_POST_URL = reverse('new_post')
-GROUP_URL = reverse('group', args=[SLUG])
-PROFILE_URL = reverse('profile', args=[USERNAME])
-ERROR500_URL = reverse('error500')
-ERROR400_URL = reverse('error404')
+from . import constants as c
 
 
 class PostURLTests(TestCase):
@@ -26,7 +15,7 @@ class PostURLTests(TestCase):
 
         cls.group = Group.objects.create(
             title='Группа для теста',
-            slug=SLUG,
+            slug=c.SLUG,
             description='Описание группы'
         )
 
@@ -47,12 +36,12 @@ class PostURLTests(TestCase):
 
     def test_home_url_exists_at_desired_location(self):
         """Страница / доступна любому пользователю."""
-        response = self.guest_client.get(INDEX_URL)
+        response = self.guest_client.get(c.INDEX_URL)
         self.assertEqual(response.status_code, 200)
 
     def test_username_url_exists_at_desired_location(self):
         """Страница /author/ доступна любому пользователю."""
-        response = self.guest_client.get(PROFILE_URL)
+        response = self.guest_client.get(c.PROFILE_URL)
         self.assertEqual(response.status_code, 200)
 
     def test_username_post_url_exists_at_desired_location(self):
@@ -63,13 +52,13 @@ class PostURLTests(TestCase):
 
     def test_new_url_exists_at_desired_location(self):
         """Страница /new/ доступна авторизованному пользователю."""
-        response = self.authorized_client_other.get(NEW_POST_URL)
+        response = self.authorized_client_other.get(c.NEW_POST_URL)
         self.assertEqual(response.status_code, 200)
 
     def test_slug_url_exists_at_desired_location_authorized(self):
         """Страница /group/test-slug/ доступна авторизованному
         пользователю."""
-        response = self.authorized_client_other.get(GROUP_URL)
+        response = self.authorized_client_other.get(c.GROUP_URL)
         self.assertEqual(response.status_code, 200)
 
     def test_edit_url_redirect_anonymous_on_admin_login(self):
@@ -102,11 +91,11 @@ class PostURLTests(TestCase):
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон test_urls."""
         templates_url_names = {
-            'index.html': INDEX_URL,
-            'new.html': NEW_POST_URL,
-            'group.html': GROUP_URL,
-            'misc/500.html': ERROR500_URL,
-            'misc/404.html': ERROR400_URL,
+            'index.html': c.INDEX_URL,
+            'new.html': c.NEW_POST_URL,
+            'group.html': c.GROUP_URL,
+            'misc/500.html': c.ERROR500_URL,
+            'misc/404.html': c.ERROR400_URL,
         }
         for template, reverse_name in templates_url_names.items():
             with self.subTest():
@@ -121,15 +110,15 @@ class StaticURLTests(TestCase):
 
     def test_homepage(self):
 
-        response = self.guest_client.get(INDEX_URL)
+        response = self.guest_client.get(c.INDEX_URL)
         self.assertEqual(response.status_code, 200)
 
     def test_author(self):
 
-        response = self.guest_client.get(ABOUT_AUTHOR_URL)
+        response = self.guest_client.get(c.ABOUT_AUTHOR_URL)
         self.assertEqual(response.status_code, 200)
 
     def test_tech(self):
 
-        response = self.guest_client.get(ABOUT_TECH_URL)
+        response = self.guest_client.get(c.ABOUT_TECH_URL)
         self.assertEqual(response.status_code, 200)

@@ -10,36 +10,19 @@ from django.core.cache import cache
 from django import forms
 
 from posts.models import Post, Group, Follow, User
+from . import constants as c
 
 
-USERNAME = 'author'
-SLUG = 'test_slug'
-INDEX_URL = reverse('index')
-NEW_POST_URL = reverse('new_post')
-GROUP_URL = reverse('group', args=[SLUG])
-PROFILE_URL = reverse('profile', args=[USERNAME])
-IMAGE_URL = 'posts/small.gif'
-MEDIA_ROOT = tempfile.mkdtemp()
-
-
-@override_settings(MEDIA_ROOT=MEDIA_ROOT)
+@override_settings(MEDIA_ROOT=c.MEDIA_ROOT)
 class PostPagesTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         settings.MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
-        cls.small_gif = (b'\x47\x49\x46\x38\x39\x61\x02\x00'
-                         b'\x01\x00\x80\x00\x00\x00\x00\x00'
-                         b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-                         b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-                         b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-                         b'\x0A\x00\x3B'
-                         )
-
         cls.uploaded = SimpleUploadedFile(
             name='small.gif',
-            content=cls.small_gif,
+            content=c.SMALL_GIF,
             content_type='image/gif'
         )
 
@@ -48,7 +31,7 @@ class PostPagesTest(TestCase):
 
         cls.group = Group.objects.create(
             title='Группа для теста',
-            slug=SLUG,
+            slug=c.SLUG,
             description='Описание группы'
         )
 
@@ -81,9 +64,9 @@ class PostPagesTest(TestCase):
     def test_post_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон. test_views"""
         template_pages_names = {
-            'group.html': GROUP_URL,
-            'index.html': INDEX_URL,
-            'new.html': NEW_POST_URL,
+            'group.html': c.GROUP_URL,
+            'index.html': c.INDEX_URL,
+            'new.html': c.NEW_POST_URL,
         }
         for template, reverse_name in template_pages_names.items():
             with self.subTest(reverse_name=reverse_name):
@@ -92,7 +75,7 @@ class PostPagesTest(TestCase):
 
     def test_new_post_page_show_correct_context_index(self):
         """Шаблон new_post сформирован с правильным контекстом."""
-        response = self.authorized_client_other.get(NEW_POST_URL)
+        response = self.authorized_client_other.get(c.NEW_POST_URL)
         form_fields = {
             'text': forms.CharField,
             'group': forms.ChoiceField,
@@ -105,27 +88,27 @@ class PostPagesTest(TestCase):
 
     def test_group_page_show_correct_context(self):
         """Шаблон group сформирован с правильным контекстом."""
-        response = self.authorized_client_other.get(GROUP_URL)
+        response = self.authorized_client_other.get(c.GROUP_URL)
         self.assertEqual(response.context.get('group').title,
                          'Группа для теста')
         self.assertEqual(response.context.get('group').description,
                          'Описание группы')
-        self.assertEqual(response.context.get('group').slug, SLUG)
-        self.assertEqual(response.context.get('page')[0].image, IMAGE_URL)
+        self.assertEqual(response.context.get('group').slug, c.SLUG)
+        self.assertEqual(response.context.get('page')[0].image, c.IMAGE_URL)
 
     def test_index_page_show_correct_context(self):
         """Шаблон index сформирован с правильным контекстом."""
-        response = self.authorized_client_other.get(INDEX_URL)
+        response = self.authorized_client_other.get(c.INDEX_URL)
         post_text_0 = response.context.get('page')[0].text
         post_author_0 = response.context.get('page')[0].author.username
         post_image_0 = response.context.get('page')[0].image
         self.assertEqual(post_text_0, 'Текст')
         self.assertEqual(post_author_0, 'author')
-        self.assertEqual(post_image_0, IMAGE_URL)
+        self.assertEqual(post_image_0, c.IMAGE_URL)
 
     def test_username_post_id_page_show_correct_context(self):
         """Шаблон <username> сформирован с правильным контекстом."""
-        response = self.authorized_client_other.get(PROFILE_URL)
+        response = self.authorized_client_other.get(c.PROFILE_AUTHOR_URL)
         post_text_0 = response.context.get('page')[0].text
         self.assertEqual(post_text_0, PostPagesTest.post.text)
         post_author_0 = response.context.get('page')[0].author
@@ -133,7 +116,7 @@ class PostPagesTest(TestCase):
         post_group_0 = response.context.get('page')[0].group
         self.assertEqual(post_group_0, PostPagesTest.post.group)
         post_image_0 = response.context.get('page')[0].image
-        self.assertEqual(post_image_0, IMAGE_URL)
+        self.assertEqual(post_image_0, c.IMAGE_URL)
 
     def test_edit_correct_context(self):
         """Шаблон post_edit сформирован с правильным контекстом."""
@@ -155,15 +138,15 @@ class PostPagesTest(TestCase):
         self.assertEqual(response.context.get('post').text, 'Текст')
         self.assertEqual(response.context.get('post').author, self.user_author)
         self.assertEqual(response.context.get('post').group, self.group)
-        self.assertEqual(response.context.get('post').image, IMAGE_URL)
+        self.assertEqual(response.context.get('post').image, c.IMAGE_URL)
 
     def test_cache(self):
         """Тестирование кэша"""
-        response = self.authorized_client_author.get(INDEX_URL)
-        response2 = self.authorized_client_author.get(INDEX_URL)
+        response = self.authorized_client_author.get(c.INDEX_URL)
+        response2 = self.authorized_client_author.get(c.INDEX_URL)
         self.assertHTMLEqual(str(response), str(response2))
         cache.clear()
-        response3 = self.authorized_client_author.get(INDEX_URL)
+        response3 = self.authorized_client_author.get(c.INDEX_URL)
         self.assertHTMLEqual(str(response), str(response3))
 
 
@@ -185,12 +168,12 @@ class PaginatorViewsTest(TestCase):
 
     def test_first_page_containse_ten_records(self):
         """Тест паджинатора."""
-        response = self.client.get(INDEX_URL)
+        response = self.client.get(c.INDEX_URL)
         self.assertEqual(len(response.context.get('page').object_list),
                          self.POSTS_IN_PAGE)
 
     def test_second_page_containse_three_records(self):
-        response = self.client.get(INDEX_URL + '?page=2')
+        response = self.client.get(c.INDEX_URL + '?page=2')
         self.assertEqual(len(response.context.get('page').object_list),
                          self.POSTS_COUNT - self.POSTS_IN_PAGE)
 
